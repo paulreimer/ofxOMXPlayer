@@ -388,7 +388,8 @@ bool OMXReader::SeekTime(int time, bool backwords, double *startpts)
     UpdateCurrentPTS();
   }
   else {
-    m_pFile->rewindFile();
+    //m_pFile->rewindFile();
+    m_pFile->Seek(0);
     UpdateCurrentPTS();
     wasFileRewound = true;
   }
