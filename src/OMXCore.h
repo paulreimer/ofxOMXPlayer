@@ -163,6 +163,9 @@ public:
   void ResetEos();
   void IgnoreNextError(OMX_S32 error) { m_ignore_error = error; }
 
+  void SetCustomDecoderFillBufferDoneHandler(OMX_ERRORTYPE (*p)(OMX_HANDLETYPE, OMX_PTR, OMX_BUFFERHEADERTYPE*)){ CustomDecoderFillBufferDoneHandler = p;};
+  void SetCustomDecoderEmptyBufferDoneHandler(OMX_ERRORTYPE (*p)(OMX_HANDLETYPE, OMX_PTR, OMX_BUFFERHEADERTYPE*)){ CustomDecoderEmptyBufferDoneHandler = p;};
+
 private:
   OMX_HANDLETYPE m_handle;
   unsigned int   m_input_port;
@@ -174,6 +177,10 @@ private:
   OMX_S32 m_ignore_error;
 
   OMX_CALLBACKTYPE  m_callbacks;
+
+  //additional event handlers
+  OMX_ERRORTYPE (*CustomDecoderFillBufferDoneHandler)(OMX_HANDLETYPE, OMX_PTR, OMX_BUFFERHEADERTYPE*);
+  OMX_ERRORTYPE (*CustomDecoderEmptyBufferDoneHandler)(OMX_HANDLETYPE, OMX_PTR, OMX_BUFFERHEADERTYPE*);
 
   // OMXCore input buffers (demuxer packets)
   pthread_mutex_t   m_omx_input_mutex;
