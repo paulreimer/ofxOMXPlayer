@@ -12,6 +12,22 @@ OMXEGLImage::OMXEGLImage()
 	
 }
 
+OMX_ERRORTYPE onFillBufferDone(OMX_HANDLETYPE hComponent,
+                 OMX_PTR pAppData,
+                 OMX_BUFFERHEADERTYPE* pBuffer)
+{
+  OMX_ERRORTYPE didFillBuffer = OMX_FillThisBuffer(hComponent, pBuffer);
+  if (didFillBuffer == OMX_ErrorNone)
+  {
+    //OMXDecoderBase *ctx = static_cast<OMXDecoderBase*>(pAppData);
+
+    OMXDecoderBase::fillBufferCounter++;
+    //ofLogVerbose(__func__) << " fillBufferCounter: " << fillBufferCounter;
+  }
+
+  return didFillBuffer;
+}
+
 bool OMXEGLImage::Open(COMXStreamInfo &hints, OMXClock *clock)
 {
 	OMX_ERRORTYPE error   = OMX_ErrorNone;
@@ -345,6 +361,7 @@ bool OMXEGLImage::Open(COMXStreamInfo &hints, OMXClock *clock)
 
 	
 	
+	m_omx_render.SetCustomDecoderFillBufferDoneHandler(onFillBufferDone);
 	error = m_omx_render.SetStateForComponent(OMX_StateExecuting);
 	if(error == OMX_ErrorNone)
 	{
