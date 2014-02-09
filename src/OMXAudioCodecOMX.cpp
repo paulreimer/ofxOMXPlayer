@@ -53,7 +53,7 @@ bool COMXAudioCodecOMX::Open(COMXStreamInfo &hints)
   AVCodec* pCodec;
   m_bOpenedCodec = false;
 
-  if (!m_dllAvUtil.Load() || !m_dllAvCodec.Load() || !m_dllSwResample.Load())
+  if (!m_dllAvUtil.Load() || !m_dllAvCodec.Load() || !m_dllAvResample.Load())
     return false;
 
   m_dllAvCodec.avcodec_register_all();
@@ -112,7 +112,7 @@ void COMXAudioCodecOMX::Dispose()
   }
 
   if (m_pConvert)
-    m_dllSwResample.swr_free(&m_pConvert);
+    m_dllAvResample.avresample_free(&m_pConvert);
 
   if (m_pCodecContext)
   {
@@ -124,7 +124,7 @@ void COMXAudioCodecOMX::Dispose()
 
   m_dllAvCodec.Unload();
   m_dllAvUtil.Unload();
-  m_dllSwResample.Unload();
+  m_dllAvResample.Unload();
 
   m_iBufferSize1 = 0;
   m_iBufferSize2 = 0;
@@ -170,20 +170,22 @@ int COMXAudioCodecOMX::Decode(BYTE* pData, int iSize)
   if(m_pCodecContext->sample_fmt != AV_SAMPLE_FMT_S16 && m_iBufferSize1 > 0)
   {
     if(m_pConvert && m_pCodecContext->sample_fmt != m_iSampleFormat)
-      m_dllSwResample.swr_free(&m_pConvert);
+      m_dllAvResample.avresample_free(&m_pConvert);
 
     if(!m_pConvert)
     {
       m_iSampleFormat = m_pCodecContext->sample_fmt;
-      m_pConvert = m_dllSwResample.swr_alloc_set_opts(NULL,
-                      m_dllAvUtil.av_get_default_channel_layout(m_pCodecContext->channels), 
-                      AV_SAMPLE_FMT_S16, m_pCodecContext->sample_rate,
-                      m_dllAvUtil.av_get_default_channel_layout(m_pCodecContext->channels), 
-                      m_pCodecContext->sample_fmt, m_pCodecContext->sample_rate,
-                      0, NULL);
+
+      m_pConvert = m_dllAvResample.avresample_alloc_context();NULL,
+      av_opt_set_int(m_pConvert, "in_channel_layout",  m_dllAvUtil.av_get_default_channel_layout(m_pCodecContext->channels), 0);
+      av_opt_set_int(m_pConvert, "out_channel_layout", m_dllAvUtil.av_get_default_channel_layout(m_pCodecContext->channels), 0);
+      av_opt_set_int(m_pConvert, "in_sample_rate",   m_pCodecContext->sample_rate, 0);
+      av_opt_set_int(m_pConvert, "out_sample_rate",   m_pCodecContext->sample_rate, 0);
+      av_opt_set_int(m_pConvert, "in_sample_fmt",    m_pCodecContext->sample_fmt, 0);
+      av_opt_set_int(m_pConvert, "out_sample_fmt",   AV_SAMPLE_FMT_S16, 0);
     }
 
-    if(!m_pConvert || m_dllSwResample.swr_init(m_pConvert) < 0)
+    if(!m_pConvert || m_dllAvResample.avresample_open(m_pConvert) < 0)
     {
       ofLog(OF_LOG_VERBOSE, "COMXAudioCodecOMX::Decode - Unable to convert %d to AV_SAMPLE_FMT_S16", m_pCodecContext->sample_fmt);
       m_iBufferSize1 = 0;
@@ -192,7 +194,7 @@ int COMXAudioCodecOMX::Decode(BYTE* pData, int iSize)
     }
 
     int len = m_iBufferSize1 / m_dllAvUtil.av_get_bytes_per_sample(m_pCodecContext->sample_fmt);
-    if(m_dllSwResample.swr_convert(m_pConvert, &m_pBuffer2, len, (const uint8_t**)m_pFrame1->data, m_pFrame1->nb_samples) < 0)
+    if(m_dllAvResample.avresample_convert(m_pConvert, &m_pBuffer2, 0, len, (const uint8_t**)m_pFrame1->data, 0, m_pFrame1->nb_samples) < 0)
     {
       ofLog(OF_LOG_VERBOSE, "COMXAudioCodecOMX::Decode - Unable to convert %d to AV_SAMPLE_FMT_S16", (int)m_pCodecContext->sample_fmt);
       m_iBufferSize1 = 0;
