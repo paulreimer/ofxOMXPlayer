@@ -31,11 +31,11 @@ extern "C" {
 	#define __STDC_CONSTANT_MACROS
 #endif
 
-#include <libswresample/swresample.h>
-/*#include <libavresample/avresample.h>
+/*#include <libswresample/swresample.h>*/
+#include <libavresample/avresample.h>
 #include <libavutil/opt.h>
 #include <libavutil/samplefmt.h>
-#define SwrContext AVAudioResampleContext*/
+#define SwrContext AVAudioResampleContext
 
 }
 

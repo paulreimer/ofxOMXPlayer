@@ -52,7 +52,7 @@ public:
 
 protected:
   AVCodecContext* m_pCodecContext;
-  SwrContext*     m_pConvert;
+  AVAudioResampleContext* m_pConvert;
   enum AVSampleFormat m_iSampleFormat;
   enum PCMChannels m_channelMap[PCM_MAX_CH + 1];
 
@@ -70,7 +70,7 @@ protected:
 
   DllAvCodec m_dllAvCodec;
   DllAvUtil m_dllAvUtil;
-  DllSwResample m_dllSwResample;
+  DllSwResample m_dllAvResample;
 
   void BuildChannelMap();
 };
