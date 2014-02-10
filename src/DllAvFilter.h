@@ -80,7 +80,7 @@ public:
 #if LIBAVFILTER_VERSION_INT < AV_VERSION_INT(3,0,0)
   virtual int av_vsrc_buffer_add_frame(AVFilterContext *buffer_filter, AVFrame *frame, int flags)=0;
 #else
-  virtual int av_buffersrc_add_frame(AVFilterContext *buffer_filter, AVFrame *frame, int flags)=0;
+  virtual int av_buffersrc_add_frame(AVFilterContext *buffer_filter, AVFrame *frame)=0;
 #endif
   virtual void avfilter_unref_buffer(AVFilterBufferRef *ref)=0;
   virtual int avfilter_link(AVFilterContext *src, unsigned srcpad, AVFilterContext *dst, unsigned dstpad)=0;
@@ -133,7 +133,7 @@ public:
 #if LIBAVFILTER_VERSION_INT < AV_VERSION_INT(3,0,0)
   virtual int av_vsrc_buffer_add_frame(AVFilterContext *buffer_filter, AVFrame *frame, int flags) { return ::av_vsrc_buffer_add_frame(buffer_filter, frame, flags); }
 #elif LIBAVFILTER_VERSION_INT < AV_VERSION_INT(3,43,0)
-  virtual int av_buffersrc_add_frame(AVFilterContext *buffer_filter, AVFrame* frame, int flags) { return ::av_buffersrc_add_frame(buffer_filter, frame, flags); }
+  virtual int av_buffersrc_add_frame(AVFilterContext *buffer_filter, AVFrame* frame) { return ::av_buffersrc_add_frame(buffer_filter, frame
 #else
   virtual int av_buffersrc_add_frame(AVFilterContext *buffer_filter, AVFrame* frame, int flags) { return ::av_buffersrc_add_frame_flags(buffer_filter, frame, flags); }
 #endif
@@ -171,7 +171,7 @@ class DllAvFilter : public DllDynamic, DllAvFilterInterface
 #if LIBAVFILTER_VERSION_INT < AV_VERSION_INT(3,0,0)
   DEFINE_METHOD3(int, av_vsrc_buffer_add_frame, (AVFilterContext *p1, AVFrame *p2, int p3))
 #else
-  DEFINE_METHOD3(int, av_buffersrc_add_frame, (AVFilterContext *p1, AVFrame *p2, int p3))
+  DEFINE_METHOD2(int, av_buffersrc_add_frame, (AVFilterContext *p1, AVFrame *p2))
 #endif
   DEFINE_METHOD1(void, avfilter_unref_buffer, (AVFilterBufferRef *p1))
   DEFINE_METHOD4(int, avfilter_link, (AVFilterContext *p1, unsigned p2, AVFilterContext *p3, unsigned p4))
