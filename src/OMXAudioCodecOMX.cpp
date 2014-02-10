@@ -217,7 +217,7 @@ int COMXAudioCodecOMX::GetData(BYTE** dst)
     /* use unaligned flag to keep output packed */
     uint8_t *out_planes[m_pCodecContext->channels];
     if(m_dllAvUtil.av_samples_fill_arrays(out_planes, NULL, m_pBufferOutput, m_pCodecContext->channels, m_pFrame1->nb_samples, m_desiredSampleFormat, 1) < 0 ||
-       m_dllSwResample.swr_convert(m_pConvert, out_planes, m_pFrame1->nb_samples, (const uint8_t **)m_pFrame1->data, m_pFrame1->nb_samples) < 0)
+       m_dllSwResample.swr_convert(m_pConvert, out_planes, m_pFrame1->nb_samples, m_pFrame1->data, m_pFrame1->nb_samples) < 0)
     {
       CLog::Log(LOGERROR, "COMXAudioCodecOMX::Decode - Unable to convert format %d to %d", (int)m_pCodecContext->sample_fmt, m_desiredSampleFormat);
       outputSize = 0;
