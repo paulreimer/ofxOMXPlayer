@@ -22,7 +22,7 @@
  *
  */
 
-#ifdef TARGET_LINUX
+//#ifdef TARGET_LINUX
 
 #define LINE_ENDING "\n"
 
@@ -48,7 +48,7 @@
 #endif
 #include <sys/time.h>
 #include <time.h>
-#endif
+//#endif
 
 // do not move this, it will break osx build bad"
 #ifdef HAS_SDL
@@ -121,7 +121,7 @@
 #define PRIuS "zu"
 #endif
 
-#ifdef TARGET_LINUX
+//#ifdef TARGET_LINUX
 
 #define XXLog(a,b) printf("%s", (b))
 
@@ -134,8 +134,8 @@
 #endif
 
 #define CONST   const
-#define FALSE   0
-#define TRUE    1
+//#define FALSE   0
+//#define TRUE    1
 
 #define _fdopen fdopen
 #define _vsnprintf vsnprintf
@@ -671,7 +671,7 @@ typedef struct tWAVEFORMATEXTENSIBLE
 
 
 
-#endif
+//#endif
 
 #endif //__PLATFORM_DEFS_H__
 
