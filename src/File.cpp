@@ -1,6 +1,7 @@
 #include "linux/PlatformDefs.h"
 #include <iostream>
 #include <stdio.h>
+#include <sys/stat.h>
 #include "utils/StdString.h"
 
 #include "File.h"
