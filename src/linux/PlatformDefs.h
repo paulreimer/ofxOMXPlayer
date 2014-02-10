@@ -22,7 +22,7 @@
  *
  */
 
-#ifdef _LINUX
+#ifdef TARGET_LINUX
 
 #define LINE_ENDING "\n"
 
@@ -30,7 +30,7 @@
 #define _LARGEFILE64_SOURCE
 #endif
 
-//#undef _FILE_OFFSET_BITS
+#undef _FILE_OFFSET_BITS
 #define _FILE_OFFSET_BITS 64
 
 #include <sys/types.h>
@@ -121,7 +121,7 @@
 #define PRIuS "zu"
 #endif
 
-#ifdef _LINUX
+#ifdef TARGET_LINUX
 
 #define XXLog(a,b) printf("%s", (b))
 
@@ -134,8 +134,8 @@
 #endif
 
 #define CONST   const
-//#define FALSE   0
-//#define TRUE    1
+#define FALSE   0
+#define TRUE    1
 
 #define _fdopen fdopen
 #define _vsnprintf vsnprintf
