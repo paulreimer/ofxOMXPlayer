@@ -46,7 +46,7 @@ extern "C" {
     #include <libavfilter/avfiltergraph.h>
     #include <libavfilter/buffersink.h>
     #include <libavfilter/buffersrc.h>
-    #include <libavfilter/avcodec.h>
+    #include <libavcodec/avcodec.h>
   #elif (defined HAVE_FFMPEG_AVFILTER_H)
     #include <ffmpeg/avfiltergraph.h>
     #include <ffmpeg/buffersink.h>
