@@ -138,7 +138,8 @@ bool ofxOMXPlayerEngine::setup(ofxOMXPlayerSettings settings)
 		{
 			ofLogVerbose()	<< "Video streams detection PASS";
 			
-			if(clock.OMXInitialize(hasVideo, hasAudio))
+			//if(clock.OMXInitialize(hasVideo, hasAudio))
+			if(clock.OMXInitialize() && clock.OMXReset(hasVideo, hasAudio))
 			{
 				ofLogVerbose() << "clock Init PASS";
 				return openPlayer();
@@ -244,7 +245,7 @@ bool ofxOMXPlayerEngine::openPlayer()
 //			}
 		}
 		clock.OMXStateExecute();
-		clock.OMXStart(0.0);
+		//clock.OMXStart(0.0);
 				
 		ofLogVerbose() << "Opened video PASS";
 		Create();
@@ -520,7 +521,7 @@ void ofxOMXPlayerEngine::setVolume(float volume)
 		return;
 	}
 	float value = ofMap(volume, 0.0, 1.0, -6000.0, 6000.0, true);
-	audioPlayer->SetCurrentVolume(value);
+	audioPlayer->SetVolume(value);
 }
 
 float ofxOMXPlayerEngine::getVolume()
@@ -529,7 +530,7 @@ float ofxOMXPlayerEngine::getVolume()
 	{
 		return 0;
 	}
-	float value = ofMap(audioPlayer->GetCurrentVolume(), -6000.0, 6000.0, 0.0, 1.0, true);
+	float value = ofMap(audioPlayer->GetVolume(), -6000.0, 6000.0, 0.0, 1.0, true);
 	return floorf(value * 100 + 0.5) / 100;
 }
 
