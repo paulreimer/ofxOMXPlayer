@@ -133,7 +133,7 @@ public:
 #if LIBAVFILTER_VERSION_INT < AV_VERSION_INT(3,0,0)
   virtual int av_vsrc_buffer_add_frame(AVFilterContext *buffer_filter, AVFrame *frame, int flags) { return ::av_vsrc_buffer_add_frame(buffer_filter, frame, flags); }
 #elif LIBAVFILTER_VERSION_INT < AV_VERSION_INT(3,43,0)
-  virtual int av_buffersrc_add_frame(AVFilterContext *buffer_filter, AVFrame* frame) { return ::av_buffersrc_add_frame(buffer_filter, frame
+  virtual int av_buffersrc_add_frame(AVFilterContext *buffer_filter, AVFrame* frame) { return ::av_buffersrc_add_frame(buffer_filter, frame); }
 #else
   virtual int av_buffersrc_add_frame(AVFilterContext *buffer_filter, AVFrame* frame, int flags) { return ::av_buffersrc_add_frame_flags(buffer_filter, frame, flags); }
 #endif
