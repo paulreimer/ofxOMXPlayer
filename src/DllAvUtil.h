@@ -36,6 +36,7 @@ extern "C" {
 #if (defined USE_EXTERNAL_FFMPEG)
   #if (defined HAVE_LIBAVUTIL_AVUTIL_H)
     #include <libavutil/avutil.h>
+    #include <libavutil/channel_layout.h>
     #include <libavutil/crc.h>
     #include <libavutil/fifo.h>
     // for LIBAVCODEC_VERSION_INT:
