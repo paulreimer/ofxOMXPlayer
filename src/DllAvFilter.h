@@ -75,7 +75,7 @@ public:
   virtual AVFilterGraph *avfilter_graph_alloc(void)=0;
   virtual AVFilterInOut *avfilter_inout_alloc()=0;
   virtual void avfilter_inout_free(AVFilterInOut **inout)=0;
-  virtual int avfilter_graph_parse(AVFilterGraph *graph, const char *filters, AVFilterInOut **inputs, AVFilterInOut **outputs, void *log_ctx)=0;
+  virtual int avfilter_graph_parse(AVFilterGraph *graph, const char *filters, AVFilterInOut *inputs, AVFilterInOut *outputs, void *log_ctx)=0;
   virtual int avfilter_graph_config(AVFilterGraph *graphctx, void *log_ctx)=0;
 #if LIBAVFILTER_VERSION_INT < AV_VERSION_INT(3,0,0)
   virtual int av_vsrc_buffer_add_frame(AVFilterContext *buffer_filter, AVFrame *frame, int flags)=0;
@@ -122,7 +122,7 @@ public:
   {
     ::avfilter_inout_free(inout);
   }
-  virtual int avfilter_graph_parse(AVFilterGraph *graph, const char *filters, AVFilterInOut **inputs, AVFilterInOut **outputs, void *log_ctx)
+  virtual int avfilter_graph_parse(AVFilterGraph *graph, const char *filters, AVFilterInOut *inputs, AVFilterInOut *outputs, void *log_ctx)
   {
     return ::avfilter_graph_parse(graph, filters, inputs, outputs, log_ctx);
   }
@@ -229,7 +229,7 @@ public:
   {
     return avfilter_inout_alloc_dont_call();
   }
-  int avfilter_graph_parse(AVFilterGraph *graph, const char *filters, AVFilterInOut **inputs, AVFilterInOut **outputs, void *log_ctx)
+  int avfilter_graph_parse(AVFilterGraph *graph, const char *filters, AVFilterInOut *inputs, AVFilterInOut *outputs, void *log_ctx)
   {
     return avfilter_graph_parse_dont_call(graph, filters, inputs, outputs, log_ctx);
   }
