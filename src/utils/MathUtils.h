@@ -53,7 +53,7 @@ namespace MathUtils
     const float round_to_nearest = 0.5f;
     int i;
     
-#ifndef TARGET_LINUX
+#ifndef OMXPLAYER_TARGET_LINUX
     __asm
     {
       fld x
@@ -135,7 +135,7 @@ namespace MathUtils
 #endif
     int i;
 
-#ifndef TARGET_LINUX
+#ifndef OMXPLAYER_TARGET_LINUX
     __asm
     {
       fld x

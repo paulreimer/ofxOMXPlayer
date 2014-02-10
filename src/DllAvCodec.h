@@ -107,7 +107,7 @@ public:
   virtual void av_init_packet(AVPacket *pkt)=0;
 };
 
-#if (defined USE_EXTERNAL_FFMPEG) || (defined TARGET_DARWIN)
+#if (defined USE_EXTERNAL_FFMPEG) || (defined OMXPLAYER_TARGET_DARWIN)
 
 // Use direct layer
 class DllAvCodec : public DllDynamic, DllAvCodecInterface

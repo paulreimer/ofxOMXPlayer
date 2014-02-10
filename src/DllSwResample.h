@@ -62,9 +62,9 @@ public:
   virtual int swr_convert(struct SwrContext *s, uint8_t **out, int out_count, uint8_t **in , int in_count)=0;
 };
 
-#if (defined USE_EXTERNAL_FFMPEG) || (defined TARGET_DARWIN) 
+#if (defined USE_EXTERNAL_FFMPEG) || (defined OMXPLAYER_TARGET_DARWIN) 
 
-#if HAVE_LIBSWRESAMPLE_SWRESAMPLE_H || (defined TARGET_DARWIN)
+#if HAVE_LIBSWRESAMPLE_SWRESAMPLE_H || (defined OMXPLAYER_TARGET_DARWIN)
 // Use direct mapping
 class DllSwResample : public DllDynamic, DllSwResampleInterface
 {

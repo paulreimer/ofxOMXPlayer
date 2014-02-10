@@ -21,7 +21,7 @@
  *
  */
 
-#if defined(HAVE_CONFIG_H) && !defined(TARGET_WINDOWS)
+#if defined(HAVE_CONFIG_H) && !defined(OMXPLAYER_TARGET_WINDOWS)
 #include "config.h"
 #endif
 
@@ -83,7 +83,7 @@
  * Non-free Components
  **********************/
 
-#if defined(TARGET_WINDOWS)
+#if defined(OMXPLAYER_TARGET_WINDOWS)
   #define HAS_FILESYSTEM_RAR
 #else
   #if defined(HAVE_XBMC_NONFREE)
@@ -95,7 +95,7 @@
  * Win32 Specific
  *****************/
 
-#if defined(TARGET_WINDOWS)
+#if defined(OMXPLAYER_TARGET_WINDOWS)
 #define HAS_SDL
 #define HAS_SDL_JOYSTICK
 #define HAS_DVD_DRIVE
@@ -118,8 +118,8 @@
  * Mac Specific
  *****************/
 
-#if defined(TARGET_DARWIN)
-  #if defined(TARGET_DARWIN_OSX)
+#if defined(OMXPLAYER_TARGET_DARWIN)
+  #if defined(OMXPLAYER_TARGET_DARWIN_OSX)
     #define HAS_GL
     #define HAS_SDL
     #define HAS_SDL_AUDIO
@@ -134,7 +134,7 @@
  * Linux Specific
  *****************/
 
-#if defined(TARGET_LINUX)
+#if defined(OMXPLAYER_TARGET_LINUX)
 
 #if defined(HAVE_LIBAVAHI_COMMON) && defined(HAVE_LIBAVAHI_CLIENT)
 #define HAS_ZEROCONF
@@ -186,7 +186,7 @@
  * Git revision
  *****************/
 
-#if defined(TARGET_DARWIN)
+#if defined(OMXPLAYER_TARGET_DARWIN)
 #include "../git_revision.h"
 #endif
 
@@ -198,7 +198,7 @@
  * Additional platform specific includes
  ****************************************/
 
-#if defined(TARGET_WINDOWS)
+#if defined(OMXPLAYER_TARGET_WINDOWS)
 #include <windows.h>
 #define DIRECTINPUT_VERSION 0x0800
 #include "mmsystem.h"
@@ -219,7 +219,7 @@
 #endif
 #endif
 
-#if defined(TARGET_POSIX)
+#if defined(OMXPLAYER_TARGET_POSIX)
 #include <time.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -254,7 +254,7 @@
 #endif
 
 #if HAS_GLES == 2
-  #if defined(TARGET_DARWIN)
+  #if defined(OMXPLAYER_TARGET_DARWIN)
     #include <OpenGLES/ES2/gl.h>
     #include <OpenGLES/ES2/glext.h>
   #else

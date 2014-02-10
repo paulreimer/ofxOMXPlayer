@@ -18,9 +18,9 @@
  *
  */
 
-#if (defined HAVE_CONFIG_H) && (!defined TARGET_WINDOWS)
+#if (defined HAVE_CONFIG_H) && (!defined OMXPLAYER_TARGET_WINDOWS)
   #include "config.h"
-#elif defined(TARGET_WINDOWS)
+#elif defined(OMXPLAYER_TARGET_WINDOWS)
 #include "system.h"
 #endif
 
@@ -33,7 +33,7 @@
 
 #include "OMXClock.h"
 
-#ifdef TARGET_LINUX
+#ifdef OMXPLAYER_TARGET_LINUX
 #include "XMemUtils.h"
 #endif
 
