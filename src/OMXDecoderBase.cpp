@@ -35,11 +35,11 @@ OMXDecoderBase::~OMXDecoderBase()
 	ofLogVerbose() << "~OMXDecoderBase START ---------";
 	//m_av_clock->OMXStop();
 	//m_av_clock->OMXStateIdle();
-	m_omx_tunnel_decoder.Flush();
+	//m_omx_tunnel_decoder.Flush();
 	/*if(m_deinterlace)
 		m_omx_tunnel_image_fx.Flush();*/
-	m_omx_tunnel_clock.Flush();
-	m_omx_tunnel_sched.Flush();
+	//m_omx_tunnel_clock.Flush();
+	//m_omx_tunnel_sched.Flush();
 	
 	m_omx_tunnel_clock.Deestablish();
 	m_omx_tunnel_decoder.Deestablish();
@@ -236,7 +236,7 @@ void OMXDecoderBase::Reset()
 	ofLogVerbose(__func__) << " START";
 	
 	m_omx_decoder.FlushInput();
-	m_omx_tunnel_decoder.Flush();
+	//m_omx_tunnel_decoder.Flush();
 	
 	ofLogVerbose(__func__) << " END";
 }
