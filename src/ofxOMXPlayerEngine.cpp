@@ -520,7 +520,7 @@ void ofxOMXPlayerEngine::setVolume(float volume)
 		return;
 	}
 	float value = ofMap(volume, 0.0, 1.0, -6000.0, 6000.0, true);
-	audioPlayer->SetCurrentVolume(value);
+	audioPlayer->SetVolume(value);
 }
 
 float ofxOMXPlayerEngine::getVolume()
@@ -529,7 +529,7 @@ float ofxOMXPlayerEngine::getVolume()
 	{
 		return 0;
 	}
-	float value = ofMap(audioPlayer->GetCurrentVolume(), -6000.0, 6000.0, 0.0, 1.0, true);
+	float value = ofMap(audioPlayer->GetVolume(), -6000.0, 6000.0, 0.0, 1.0, true);
 	return floorf(value * 100 + 0.5) / 100;
 }
 
