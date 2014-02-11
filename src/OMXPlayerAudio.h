@@ -1,6 +1,26 @@
-#pragma once
-#include "ofMain.h"
+/*
+ *      Copyright (C) 2005-2008 Team XBMC
+ *      http://www.xbmc.org
+ *
+ *  This Program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2, or (at your option)
+ *  any later version.
+ *
+ *  This Program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with XBMC; see the file COPYING.  If not, write to
+ *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  http://www.gnu.org/copyleft/gpl.html
+ *
+ */
 
+#ifndef _OMX_PLAYERAUDIO_H_
+#define _OMX_PLAYERAUDIO_H_
 
 #include "DllAvUtil.h"
 #include "DllAvFormat.h"
@@ -13,16 +33,15 @@
 #include "OMXClock.h"
 #include "OMXStreamInfo.h"
 #include "OMXAudio.h"
-
-
 #include "OMXAudioCodecOMX.h"
-
 #include "OMXThread.h"
 
 #include <deque>
 #include <string>
+#include <atomic>
 #include <sys/types.h>
 
+using namespace std;
 
 class OMXPlayerAudio : public OMXThread
 {
@@ -47,22 +66,23 @@ protected:
   std::string               m_device;
   bool                      m_use_passthrough;
   bool                      m_use_hw_decode;
-  IAudioRenderer::EEncoded  m_passthrough;
+  bool                      m_passthrough;
   bool                      m_hw_decode;
   bool                      m_boost_on_downmix;
-  bool                      m_bAbort;	
+  bool                      m_bAbort;
   bool                      m_use_thread; 
   bool                      m_flush;
-  enum PCMChannels          *m_pChannelMap;
+  std::atomic<bool>         m_flush_requested;
+  bool                      m_live;
+  enum PCMLayout            m_layout;
   unsigned int              m_cached_size;
+  unsigned int              m_max_data_size;
+  float                     m_fifo_size;
   COMXAudioCodecOMX         *m_pAudioCodec;
-  int                       m_speed;
-
-  int64_t m_errortime; //timestamp of last time we measured
-
-
+  float                     m_CurrentVolume;
+  long                      m_amplification;
+  bool                      m_mute;
   bool   m_player_error;
-
 
   void Lock();
   void UnLock();
@@ -74,7 +94,7 @@ public:
   ~OMXPlayerAudio();
   bool Open(COMXStreamInfo &hints, OMXClock *av_clock, OMXReader *omx_reader,
             std::string device, bool passthrough, bool hw_decode,
-            bool boost_on_downmix, bool use_thread);
+            bool boost_on_downmix, bool use_thread, bool is_live, enum PCMLayout layout, float queue_size, float fifo_size);
   bool Close();
   bool Decode(OMXPacket *pkt);
   void Process();
@@ -82,24 +102,23 @@ public:
   bool AddPacket(OMXPacket *pkt);
   bool OpenAudioCodec();
   void CloseAudioCodec();      
-  IAudioRenderer::EEncoded IsPassthrough(COMXStreamInfo hints);
+  bool IsPassthrough(COMXStreamInfo hints);
   bool OpenDecoder();
   bool CloseDecoder();
   double GetDelay();
   double GetCacheTime();
+  double GetCacheTotal();
   double GetCurrentPTS() { return m_iCurrentPts; };
+  void SubmitEOS();
+  bool IsEOS();
   void WaitCompletion();
-  unsigned int GetCached()
-  {
-    Lock();
-    unsigned int cached_size = m_cached_size;
-    UnLock();
-    return cached_size;
-
-  };
-
-  void SetCurrentVolume(long nVolume);
-  long GetCurrentVolume();
-  void SetSpeed(int iSpeed);
+  unsigned int GetCached() { return m_cached_size; };
+  unsigned int GetMaxCached() { return m_max_data_size; };
+  unsigned int GetLevel() { return m_max_data_size ? 100 * m_cached_size / m_max_data_size : 0; };
+  void SetVolume(float fVolume)                          { m_CurrentVolume = fVolume; if(m_decoder) m_decoder->SetVolume(fVolume); }
+  float GetVolume()                                      { return m_CurrentVolume; }
+  void SetMute(bool bOnOff)                              { m_mute = bOnOff; if(m_decoder) m_decoder->SetMute(bOnOff); }
+  void SetDynamicRangeCompression(long drc)              { m_amplification = drc; if(m_decoder) m_decoder->SetDynamicRangeCompression(drc); }
   bool Error() { return !m_player_error; };
 };
+#endif

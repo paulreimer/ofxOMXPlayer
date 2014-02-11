@@ -21,8 +21,6 @@
  *
  */
 
-#include "ofMain.h"
-
 #include "DllAvCodec.h"
 #include "DllAvFormat.h"
 #include "DllAvUtil.h"
@@ -43,34 +41,30 @@ public:
   int GetData(BYTE** dst);
   void Reset();
   int GetChannels();
-  enum PCMChannels *GetChannelMap();
+  uint64_t GetChannelMap();
   int GetSampleRate();
   int GetBitsPerSample();
-  const char* GetName() { return "FFmpeg"; }
-  int GetBufferSize() { return m_iBuffered; }
+  static const char* GetName() { return "FFmpeg"; }
   int GetBitRate();
 
 protected:
   AVCodecContext* m_pCodecContext;
   SwrContext*     m_pConvert;
   enum AVSampleFormat m_iSampleFormat;
-  enum PCMChannels m_channelMap[PCM_MAX_CH + 1];
+  enum AVSampleFormat m_desiredSampleFormat;
 
   AVFrame* m_pFrame1;
-  int   m_iBufferSize1;
 
-  BYTE *m_pBuffer2;
-  int   m_iBufferSize2;
+  BYTE *m_pBufferOutput;
+  int   m_iBufferOutputAlloced;
 
   bool m_bOpenedCodec;
-  int m_iBuffered;
 
   int     m_channels;
-  uint64_t m_layout;
 
+  bool m_bFirstFrame;
+  bool m_bGotFrame;
   DllAvCodec m_dllAvCodec;
   DllAvUtil m_dllAvUtil;
   DllSwResample m_dllSwResample;
-
-  void BuildChannelMap();
 };
