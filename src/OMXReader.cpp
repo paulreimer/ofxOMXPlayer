@@ -338,6 +338,7 @@ bool OMXReader::Close()
   m_chapter_count   = 0;
   m_iCurrentPts     = DVD_NOPTS_VALUE;
   m_speed           = DVD_PLAYSPEED_NORMAL;
+  wasFileRewound = false;
 
   ClearStreams();
 
@@ -383,7 +384,14 @@ bool OMXReader::SeekTime(int time, bool backwords, double *startpts)
   int ret = m_dllAvFormat.av_seek_frame(m_pFormatContext, -1, seek_pts, backwords ? AVSEEK_FLAG_BACKWARD : 0);
 
   if(ret >= 0)
+  {
     UpdateCurrentPTS();
+  }
+  else {
+    m_pFile->rewindFile();
+    UpdateCurrentPTS();
+    wasFileRewound = true;
+  }
 
   // in this case the start time is requested time
   if(startpts)
