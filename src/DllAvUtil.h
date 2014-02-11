@@ -32,6 +32,7 @@
 extern "C"
 {
 #include <libavutil/avutil.h>
+#include <libavutil/channel_layout.h>
 #include <libavutil/crc.h>
 #include <libavutil/fifo.h>
 // for LIBAVCODEC_VERSION_INT:
