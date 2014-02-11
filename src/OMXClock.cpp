@@ -1,4 +1,5 @@
 #include "OMXClock.h"
+#include "ofLog.h"
 
 OMXClock::OMXClock()
 {
