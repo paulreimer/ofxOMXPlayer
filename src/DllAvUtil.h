@@ -37,7 +37,6 @@ extern "C"
 // for LIBAVCODEC_VERSION_INT:
 #include <libavcodec/avcodec.h>
 #include <libavutil/opt.h>
-#include <libavcodec/opt.h>
 #include <libavutil/mem.h>
 
 }
