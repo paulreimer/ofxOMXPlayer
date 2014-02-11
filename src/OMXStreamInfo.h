@@ -55,6 +55,8 @@ public:
   int profile; // encoder profile of the stream reported by the decoder. used to qualify hw decoders.
   bool ptsinvalid;  // pts cannot be trusted (avi's).
   int orientation; // video orientation in clockwise degrees
+  int nb_frames;
+  float duration;
 
   // AUDIO
   int channels;

@@ -57,6 +57,8 @@ void COMXStreamInfo::Clear()
   level    = 0;
   profile  = 0;
   ptsinvalid = false;
+  nb_frames = 0;
+  duration = 0.0;
 
   channels   = 0;
   samplerate = 0;
