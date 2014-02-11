@@ -23,8 +23,6 @@
 #define __STDC_LIMIT_MACROS
 #endif
 
-#include "ofMain.h"
-
 #include <cstdlib>
 #include <string.h>
 #include <stdio.h>
@@ -32,7 +30,10 @@
 
 #include "MathUtils.h"
 #include "PCMRemap.h"
-
+#include "utils/log.h"
+#ifdef _WIN32
+#include "../win32/PlatformDefs.h"
+#endif
 
 static enum PCMChannels PCMLayoutMap[PCM_MAX_LAYOUT][PCM_MAX_CH + 1] =
 {
@@ -283,7 +284,7 @@ void CPCMRemap::ResolveChannels()
   if (!m_ignoreLayout && m_inChannels == 1 && m_inMap[0] == PCM_FRONT_CENTER
       && m_useable[PCM_FRONT_LEFT] && m_useable[PCM_FRONT_RIGHT])
   {
-    ofLog(OF_LOG_VERBOSE, "CPCMRemap: Mapping mono audio to front left and front right");
+    CLog::Log(LOGDEBUG, "CPCMRemap: Mapping mono audio to front left and front right");
     m_useable[PCM_FRONT_CENTER] = false;
     m_useable[PCM_FRONT_LEFT_OF_CENTER] = false;
     m_useable[PCM_FRONT_RIGHT_OF_CENTER] = false;
@@ -309,7 +310,7 @@ void CPCMRemap::ResolveChannels()
   /* if our input has side, and not back channels, and our output doesnt have side channels */
   if (hasSide && !hasBack && (!m_useable[PCM_SIDE_LEFT] || !m_useable[PCM_SIDE_RIGHT]))
   {
-    ofLog(OF_LOG_VERBOSE, "CPCMRemap: Forcing side channel map to back channels");
+    CLog::Log(LOGDEBUG, "CPCMRemap: Forcing side channel map to back channels");
     for(in_ch = 0; in_ch < m_inChannels; ++in_ch)
            if (m_inMap[in_ch] == PCM_SIDE_LEFT ) m_inMap[in_ch] = PCM_BACK_LEFT;
       else if (m_inMap[in_ch] == PCM_SIDE_RIGHT) m_inMap[in_ch] = PCM_BACK_RIGHT;   
@@ -361,8 +362,8 @@ void CPCMRemap::BuildMap()
   m_outStride = m_inSampleSize * m_outChannels;
 
   /* see if we need to normalize the levels */
-  bool dontnormalize = 1;
-  ofLog(OF_LOG_VERBOSE, "CPCMRemap: Downmix normalization is %s", (dontnormalize ? "disabled" : "enabled"));
+  bool dontnormalize = m_dontnormalize;
+  CLog::Log(LOGDEBUG, "CPCMRemap: Downmix normalization is %s", (dontnormalize ? "disabled" : "enabled"));
 
   ResolveChannels();
 
@@ -416,7 +417,7 @@ void CPCMRemap::BuildMap()
       f.Format("%s(%f%s) ",  PCMChannelStr(dst->channel).c_str(), dst->level, dst->copy ? "*" : "");
       s += f;
     }
-    ofLog(OF_LOG_VERBOSE, "CPCMRemap: %s = %s\n", PCMChannelStr(m_outMap[out_ch]).c_str(), s.c_str());
+    CLog::Log(LOGDEBUG, "CPCMRemap: %s = %s\n", PCMChannelStr(m_outMap[out_ch]).c_str(), s.c_str());
   }
 }
 
@@ -424,7 +425,7 @@ void CPCMRemap::DumpMap(CStdString info, unsigned int channels, enum PCMChannels
 {
   if (channelMap == NULL)
   {
-    ofLog(OF_LOG_VERBOSE, "CPCMRemap: %s channel map: NULL", info.c_str());
+    CLog::Log(LOGINFO, "CPCMRemap: %s channel map: NULL", info.c_str());
     return;
   }
 
@@ -432,7 +433,7 @@ void CPCMRemap::DumpMap(CStdString info, unsigned int channels, enum PCMChannels
   for(unsigned int i = 0; i < channels; ++i)
     mapping += ((i == 0) ? "" : ",") + PCMChannelStr(channelMap[i]);
 
-  ofLog(OF_LOG_VERBOSE, "CPCMRemap: %s channel map: %s\n", info.c_str(), mapping.c_str());
+  CLog::Log(LOGINFO, "CPCMRemap: %s channel map: %s\n", info.c_str(), mapping.c_str());
 }
 
 void CPCMRemap::Reset()
@@ -443,21 +444,18 @@ void CPCMRemap::Reset()
 }
 
 /* sets the input format, and returns the requested channel layout */
-enum PCMChannels *CPCMRemap::SetInputFormat(unsigned int channels, enum PCMChannels *channelMap, unsigned int sampleSize, unsigned int sampleRate)
+enum PCMChannels *CPCMRemap::SetInputFormat(unsigned int channels, enum PCMChannels *channelMap, unsigned int sampleSize, unsigned int sampleRate, enum PCMLayout channelLayout, bool dontnormalize)
 {
   m_inChannels   = channels;
   m_inSampleSize = sampleSize;
   m_sampleRate   = sampleRate;
   m_inSet        = channelMap != NULL;
-	ofLogVerbose() << "channels: " << channels << " sampleSize: " << sampleSize << " sampleRate: " << sampleRate;
   if (channelMap)
     memcpy(m_inMap, channelMap, sizeof(enum PCMChannels) * channels);
 
-  /* fix me later */
-  assert(sampleSize == 2);
-
   /* get the audio layout, and count the channels in it */
-  m_channelLayout  = PCM_LAYOUT_2_0;
+  m_channelLayout = channelLayout;
+  m_dontnormalize = dontnormalize;
   if (m_channelLayout >= PCM_MAX_LAYOUT) m_channelLayout = PCM_LAYOUT_2_0;
 
   
@@ -504,6 +502,7 @@ void CPCMRemap::SetOutputFormat(unsigned int channels, enum PCMChannels *channel
   m_holdCounter = 0;
 }
 
+#if 0
 void CPCMRemap::Remap(void *data, void *out, unsigned int samples, long drc)
 {
   float gain = 1.0f;
@@ -554,7 +553,7 @@ void CPCMRemap::ProcessInput(void* data, void* out, unsigned int samples, float 
       uint8_t* dstend = dst + samples * m_outStride;
       while (dst < dstend)
       {
-        *(int16_t*)dst = *(int16_t*)src;
+        *(float*)dst = *(float*)src;
         src += m_inStride;
         dst += m_outStride;
       }
@@ -568,7 +567,7 @@ void CPCMRemap::ProcessInput(void* data, void* out, unsigned int samples, float 
         float*   dstend = dst + samples * m_outChannels;
         while (dst < dstend)
         {
-          *dst += (float)(*(int16_t*)src) * info->level;
+          *dst += (float)(*(float*)src) * info->level;
           src += m_inStride;
           dst += m_outChannels;
         }
@@ -615,7 +614,7 @@ void CPCMRemap::ProcessLimiter(unsigned int samples, float gain)
 
     if (!m_limiterEnabled)
     {
-      ofLog(OF_LOG_VERBOSE, "CPCMRemap:: max gain: %f, enabling limiter", highestgain);
+      CLog::Log(LOGDEBUG, "CPCMRemap:: max gain: %f, enabling limiter", highestgain);
       m_limiterEnabled = true;
     }
 
@@ -675,7 +674,7 @@ void CPCMRemap::ProcessLimiter(unsigned int samples, float gain)
   {
     if (m_limiterEnabled)
     {
-      ofLog(OF_LOG_VERBOSE, "CPCMRemap:: max gain: %f, disabling limiter", highestgain);
+      CLog::Log(LOGDEBUG, "CPCMRemap:: max gain: %f, disabling limiter", highestgain);
       m_limiterEnabled = false;
     }
 
@@ -703,7 +702,7 @@ void CPCMRemap::ProcessOutput(void* out, unsigned int samples, float gain)
 
       while(dst < dstend)
       {
-        *(int16_t*)dst = MathUtils::round_int(std::min(std::max(*src, (float)INT16_MIN), (float)INT16_MAX));
+        *(float*)dst = MathUtils::round_int(std::min(std::max(*src, -1.0f), 1.0f));
         src += m_outChannels;
         dst += m_outStride;
       }
@@ -730,7 +729,7 @@ int CPCMRemap::FramesToInBytes(int frames)
 {
   return frames * m_inSampleSize * m_inChannels;
 }
-
+#endif
 CStdString CPCMRemap::PCMChannelStr(enum PCMChannels ename)
 {
   const char* PCMChannelName[] =
@@ -765,7 +764,7 @@ CStdString CPCMRemap::PCMChannelStr(enum PCMChannels ename)
 
   return namestr;
 }
-
+#if 0
 CStdString CPCMRemap::PCMLayoutStr(enum PCMLayout ename)
 {
   const char* PCMLayoutName[] =
@@ -792,4 +791,21 @@ CStdString CPCMRemap::PCMLayoutStr(enum PCMLayout ename)
 
   return namestr;
 }
+#endif
 
+
+void CPCMRemap::GetDownmixMatrix(float *downmix)
+{
+  for (int i=0; i<8*8; i++)
+    downmix[i] = 0.0f;
+
+  for (unsigned int ch = 0; ch < m_outChannels; ch++)
+  {
+    struct PCMMapInfo *info = m_lookupMap[m_outMap[ch]];
+    if (info->channel == PCM_INVALID)
+      continue;
+
+    for(; info->channel != PCM_INVALID; info++)
+      downmix[8*ch + (info->in_offset>>1)] = info->level;
+  }
+}
