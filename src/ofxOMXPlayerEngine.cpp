@@ -209,10 +209,19 @@ bool ofxOMXPlayerEngine::openPlayer()
 		int m_use_hw_audio			= false;
 		bool m_boost_on_downmix		= false;
 		bool m_thread_player		= true;
+		bool m_live             = true;
+		enum PCMLayout m_layout = PCM_LAYOUT_2_0;
+		float audio_queue_size  = 0; // 0 means use default
+		float audio_fifo_size   = 0; // 0 means use default
 		audioPlayer = new OMXPlayerAudio();
-		didAudioOpen = audioPlayer->Open(audioStreamInfo, &clock, &omxReader, deviceString, 
+		//didAudioOpen = audioPlayer->Open(audioStreamInfo, &clock, &omxReader, deviceString,
+		//								m_passthrough, m_use_hw_audio,
+		//								m_boost_on_downmix, m_thread_player);
+		didAudioOpen = audioPlayer->Open(audioStreamInfo, &clock, &omxReader, deviceString,
 										m_passthrough, m_use_hw_audio,
-										m_boost_on_downmix, m_thread_player);
+										m_boost_on_downmix, m_thread_player,
+										m_live, m_layout,
+										audio_queue_size, audio_fifo_size);
 		if (didAudioOpen) 
 		{
 			ofLogVerbose() << " AUDIO PLAYER OPEN PASS";
