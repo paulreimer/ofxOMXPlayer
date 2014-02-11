@@ -187,11 +187,15 @@ bool ofxOMXPlayerEngine::openPlayer()
 		{
 			nonEglPlayer = new OMXPlayerVideo();
 		}
-		bool deinterlace = false;
+		EDEINTERLACEMODE deinterlace = VS_DEINTERLACEMODE_OFF;
 		bool hdmi_clock_sync = true;
+		bool use_thread	= true;
 		float display_aspect = 1.0;
-		
-		didVideoOpen = nonEglPlayer->Open(videoStreamInfo, &clock, deinterlace, hdmi_clock_sync, display_aspect);
+    CRect DestRect = {0,0,0,0};
+    float video_fifo_size = 0.0;
+    float video_queue_size = 0.0;
+
+		didVideoOpen = nonEglPlayer->Open(videoStreamInfo, &clock, DestRect, deinterlace, hdmi_clock_sync, use_thread, display_aspect, video_queue_size, video_fifo_size);
 		videoPlayer = (OMXPlayerVideoBase*)nonEglPlayer;
 		
 	}
