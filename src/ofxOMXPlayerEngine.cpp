@@ -141,6 +141,7 @@ bool ofxOMXPlayerEngine::setup(ofxOMXPlayerSettings settings)
 			//if(clock.OMXInitialize(hasVideo, hasAudio))
 			if(clock.OMXInitialize() && clock.OMXReset(hasVideo, hasAudio))
 			{
+				clock.OMXStateIdle();
 				ofLogVerbose() << "clock Init PASS";
 				return openPlayer();
 				
