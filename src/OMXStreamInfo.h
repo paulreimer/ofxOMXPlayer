@@ -24,9 +24,13 @@
 #if (defined HAVE_CONFIG_H) && (!defined WIN32)
   #include "config.h"
 #endif
+#ifndef TARGET_LINUX
+enum AVCodecID;
+#else
 extern "C" {
   #include "libavcodec/avcodec.h"
 }
+#endif
 
 class CDemuxStream;
 
