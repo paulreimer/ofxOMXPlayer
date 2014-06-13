@@ -837,18 +837,18 @@ bool OMXReader::GetHints(AVStream *stream, COMXStreamInfo *hints)
     hints->duration      = stream->duration;
     hints->nb_frames     = stream->nb_frames;
 
-    hints->fpsrate       = stream->r_frame_rate.num;
-    hints->fpsscale      = stream->r_frame_rate.den;
+    hints->fpsrate       = stream->avg_frame_rate.num;
+    hints->fpsscale      = stream->avg_frame_rate.den;
 
     if(m_bMatroska && stream->avg_frame_rate.den && stream->avg_frame_rate.num)
     {
       hints->fpsrate      = stream->avg_frame_rate.num;
       hints->fpsscale     = stream->avg_frame_rate.den;
     }
-    else if(stream->r_frame_rate.num && stream->r_frame_rate.den)
+    else if(stream->avg_frame_rate.num && stream->avg_frame_rate.den)
     {
-      hints->fpsrate      = stream->r_frame_rate.num;
-      hints->fpsscale     = stream->r_frame_rate.den;
+      hints->fpsrate      = stream->avg_frame_rate.num;
+      hints->fpsscale     = stream->avg_frame_rate.den;
     }
     else
     {
